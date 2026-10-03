@@ -4,6 +4,7 @@
  */
 import { Global, Injectable, Logger, Module } from '@nestjs/common';
 import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
+import { sql } from 'drizzle-orm';
 import { Pool } from 'pg';
 import * as schema from './schema';
 import { env } from '../common/env';
@@ -30,7 +31,7 @@ export class DatabaseService {
 
   async ping(): Promise<boolean> {
     try {
-      await this.db.execute('select 1');
+      await this.db.execute(sql`select 1`);
       return true;
     } catch {
       return false;

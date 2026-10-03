@@ -73,6 +73,8 @@ export const BizError = {
     new DomainError('NIGHT_AUDIT_RUNNING', 'Un night audit est déjà en cours pour cette propriété.', 409),
   fneSubmissionFailed: (reason: string) =>
     new DomainError('FNE_SUBMISSION_FAILED', `Échec de soumission FNE : ${reason}`, 502, { reason }),
+  cashSessionAlreadyOpen: (sessionId: string) =>
+    new DomainError('CASH_SESSION_ALREADY_OPEN', 'Une session de caisse est déjà ouverte pour cet utilisateur sur cette propriété.', 409, { sessionId }),
   duplicateRequest: (key: string) =>
     new DomainError('DUPLICATE_REQUEST', 'Requête dupliquée ignorée grâce à la clé d\'idempotence.', 200, { key }),
   tenantMismatch: () =>

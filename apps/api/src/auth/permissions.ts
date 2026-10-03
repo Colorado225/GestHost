@@ -28,6 +28,7 @@ export const PERMISSIONS = [
   'fne.view', 'fne.submit', 'fne.retry',
   // Housekeeping / maintenance
   'housekeeping.view', 'housekeeping.assign', 'housekeeping.update',
+  'housekeeping.update_status', 'housekeeping.inspection', 'housekeeping.block_room',
   'maintenance.view', 'maintenance.create', 'maintenance.resolve',
   // Caisse
   'cash.view', 'cash.open_session', 'cash.close_session', 'cash.adjust',
@@ -66,6 +67,7 @@ export const SYSTEM_ROLES: Record<string, { name: string; permissions: Permissio
       'discount.apply', 'discount.approve',
       'fne.view', 'fne.submit', 'fne.retry',
       'housekeeping.view', 'housekeeping.assign', 'housekeeping.update',
+  'housekeeping.update_status', 'housekeeping.inspection', 'housekeeping.block_room',
       'maintenance.view', 'maintenance.create', 'maintenance.resolve',
       'cash.view', 'cash.open_session', 'cash.close_session', 'cash.adjust',
       'audit.view', 'report.view', 'report.export', 'night_audit.run',

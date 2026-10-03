@@ -4,6 +4,8 @@
 import { createHmac, createHash, randomUUID } from 'node:crypto';
 import { ulid } from 'ulid';
 
+export { ulid } from 'ulid';
+
 export const newId = (): string => ulid();
 export const uuid = (): string => randomUUID();
 

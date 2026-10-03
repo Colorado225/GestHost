@@ -20,6 +20,7 @@ import {
   timestamp,
   uniqueIndex,
 } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 
 /** Colonne "argent" : BIGINT en unités minimales de devise (FCFA entiers). */
 export const money = (name: string) =>
@@ -840,19 +841,27 @@ export const cashRegisters = pgTable('cash_registers', {
 
 export const cashSessions = pgTable('cash_sessions', {
   id: text('id').primaryKey(),
-  cashRegisterId: text('cash_register_id').notNull().references(() => cashRegisters.id),
+  cashRegisterId: text('cash_register_id').references(() => cashRegisters.id),
   propertyId: text('property_id').notNull().references(() => properties.id),
   userId: text('user_id').notNull(),
+  businessDate: date('business_date').notNull(),
+  currency: text('currency').notNull().default('XOF'),
+  terminalLabel: text('terminal_label'),
   openedAt: timestamp('opened_at', { withTimezone: true }).notNull().defaultNow(),
-  openingBalance: money('opening_balance'),
-  closingBalance: money('closing_balance'),
-  expectedBalance: money('expected_balance'),
-  difference: money('difference'),
-  varianceJustification: text('variance_justification'),
+  openingFloat: money('opening_float'),
+  expectedCash: money('expected_cash'),
+  declaredCash: money('declared_cash'),
+  variance: money('variance'),
+  notes: text('notes'),
   status: text('status').notNull().default('OPEN'),
   closedAt: timestamp('closed_at', { withTimezone: true }),
   closedBy: text('closed_by'),
+  updatedAt: updatedAt(),
 }, (t) => ({
+  /** Une seule session ouverte par user+propriété — course-safe via contrainte partielle unique. */
+  uqOpen: uniqueIndex('uq_cash_sessions_open')
+    .on(t.propertyId, t.userId)
+    .where(sql`${t.status} IN ('OPEN','CLOSING')`),
   idxOpen: index('idx_cash_sessions_open').on(t.cashRegisterId, t.status),
 }));
 
@@ -861,7 +870,7 @@ export const cashMovements = pgTable('cash_movements', {
   cashSessionId: text('cash_session_id').notNull().references(() => cashSessions.id),
   type: text('type').notNull(),
   amount: money('amount'),
-  reason: text('reason'),
+  description: text('description'),
   referenceType: text('reference_type'),
   referenceId: text('reference_id'),
   createdBy: text('created_by'),
@@ -886,6 +895,10 @@ export const housekeepingTasks = pgTable('housekeeping_tasks', {
   completedAt: timestamp('completed_at', { withTimezone: true }),
   verifiedAt: timestamp('verified_at', { withTimezone: true }),
   verifiedBy: text('verified_by'),
+  inspectedAt: timestamp('inspected_at', { withTimezone: true }),
+  inspectedBy: text('inspected_by'),
+  resultStatus: text('result_status'),
+  scheduledDate: date('scheduled_date'),
   notes: text('notes'),
   businessDate: date('business_date').notNull(),
   createdAt: createdAt(),

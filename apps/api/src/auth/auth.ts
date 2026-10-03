@@ -13,6 +13,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
+import { AuthController } from './auth.controller';
 import * as bcrypt from 'bcryptjs';
 import { and, eq } from 'drizzle-orm';
 import { DB, DatabaseService } from '../database/database.module';
@@ -222,7 +223,7 @@ export class JwtAuthGuard implements CanActivate {
       throw new UnauthorizedError('Token invalide ou expiré');
     }
     if (payload.typ !== 'access') throw new UnauthorizedError('Type de token invalide');
-    const authz: AuthorizationService = ctx.switchToHttp().getApplication().get(AuthorizationService);
+    const authz: AuthorizationService = (ctx.switchToHttp() as any).getApplication().get(AuthorizationService);
     req.auth = await authz.load(payload.sub);
     return true;
   }
@@ -289,6 +290,7 @@ export class AuthorizationService {
     DatabaseService,
     { provide: DB, useExisting: DatabaseService },
   ],
+  controllers: [AuthController],
   exports: [AuthService, AuthorizationService, JwtAuthGuard, PermissionGuard, JwtService],
 })
 export class AuthModule {}
